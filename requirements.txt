@@ -1,0 +1,10 @@
+fastapi~=0.92.0
+uvicorn
+strawberry
+pylibjpeg
+pyjpegls
+strawberry-graphql[fastapi]
+pydicom~=2.4.3
+numpy~=1.26.0
+Pillow~=10.0.1
+scikit-image~=0.22.0
