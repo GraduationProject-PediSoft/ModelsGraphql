@@ -4,6 +4,7 @@ import json
 
 import numpy as np
 import pydicom
+import strawberry
 from PIL import Image
 from skimage import measure
 from strawberry.file_uploads import Upload
@@ -28,7 +29,14 @@ class Queries:
         image_data = image_stream.getvalue()
         image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-        return image_base64
+        result = {
+            "response": image_base64,
+            "type": "Image"
+        }
+
+        response = json.dumps(result)
+
+        return response
 
     async def marching_squares(self, file: Upload) -> str:
         image = await file.read()
@@ -40,4 +48,37 @@ class Queries:
 
         contours_np = [cont.astype(int) for cont in contours]
         serialized_contours = json.dumps([cont.tolist() for cont in contours_np])
-        return serialized_contours
+
+        result = {
+            "response": serialized_contours,
+            "type": "Points"
+        }
+
+        response = json.dumps(result)
+
+        return response
+
+    async def average_and_deviation(self, file: Upload) -> str:
+        image = await file.read()
+        ds = pydicom.dcmread(io.BytesIO(image))
+        image = ds.pixel_array
+
+        media = np.mean(image)
+        deviation = np.std(image)
+
+        data = {
+            "media": media,
+            "desviacion_estandar": deviation
+        }
+
+        result = {
+            "response": json.dumps(data),
+            "type": "Data"
+        }
+
+        response = json.dumps(result)
+
+        return response
+
+
+
