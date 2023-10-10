@@ -1,9 +1,9 @@
 fastapi~=0.92.0
 uvicorn
-strawberry
 pylibjpeg
 pyjpegls
 strawberry-graphql[fastapi]
+py_eureka_client
 pydicom~=2.4.3
 numpy~=1.26.0
 Pillow~=10.0.1
