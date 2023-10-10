@@ -1,4 +1,6 @@
 import asyncio
+from tokenize import String
+from typing import List
 
 import py_eureka_client.eureka_client as eureka_client
 import strawberry
@@ -9,6 +11,16 @@ from strawberry.asgi import GraphQL
 
 from algorithms.models import Queries
 
+campos = [
+    '<div class="campo"><label for="direccion">Dirección</label><input type="text" id="direccion" name="direccion"></div>',
+    '<div class="campo"><label for="ciudad">Ciudad</label><input type="text" id="ciudad" name="ciudad"></div>',
+    '<div class="campo"><label for="codigo_postal">Código Postal</label><input type="text" id="codigo_postal" name="codigo_postal"></div>',
+    '<div class="campo"><label for="fecha_nacimiento">Fecha de Nacimiento</label><input type="date" id="fecha_nacimiento" name="fecha_nacimiento"></div>',
+    '<div class="campo"><label>Género</label><input type="radio" id="masculino" name="genero" value="Masculino"><label for="masculino">Masculino</label><input type="radio" id="femenino" name="genero" value="Femenino"><label for="femenino">Femenino</label><input type="radio" id="otro" name="genero" value="Otro"><label for="otro">Otro</label></div>',
+    '<div class="campo"><label>Intereses</label><input type="checkbox" id="deportes" name="intereses" value="Deportes"><label for="deportes">Deportes</label><input type="checkbox" id="musica" name="intereses" value="Música"><label for="musica">Música</label><input type="checkbox" id="cine" name="intereses" value="Cine"><label for="cine">Cine</label></div>',
+    '<div class="campo"><label for="comentarios">Comentarios</label><textarea id="comentarios" name="comentarios"></textarea></div>',
+    '<div class="campo"><label for="opciones">Opciones</label><select id="opciones" name="opciones"><option value="Opción 1">Opción 1</option><option value="Opción 2">Opción 2</option><option value="Opción 3">Opción 3</option></select></div>'
+]
 
 @strawberry.type
 class Query:
@@ -16,6 +28,11 @@ class Query:
     def hello(self) -> str:
         return "Hola, mundo!"
 
+    @strawberry.field
+    def campos(self) -> List[str]:
+        return campos
+
+#[{"html": campo} for campo in campos]
 
 @strawberry.type
 class Mutation:
