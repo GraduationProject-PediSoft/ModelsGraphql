@@ -54,10 +54,10 @@ def get_server_info():
 
 async def main():
     ip = get_server_info()
-    await eureka_client.init_async(eureka_server="http://localhost:8761",
-                                   app_name="python-service",
+    await eureka_client.init_async(eureka_server="http://eureka:8761",
+                                   app_name="example-model",
                                    instance_port=8000,
-                                   metadata={"microserviceType": "Procesamiento de Imágenes"},
+                                   metadata={"microservice-type": "IA-MODEL"},
                                    instance_host=ip
                                    )
 
