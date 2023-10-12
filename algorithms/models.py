@@ -29,6 +29,7 @@ class AverageInput:
 class Queries:
 
     async def binarization(self, inpt: BinarizationInput) -> str:
+        print(inpt.file)
         image = await inpt.file.read()
         dicom_dataset = pydicom.dcmread(io.BytesIO(image))
 
@@ -75,6 +76,7 @@ class Queries:
         return response
 
     async def average_and_deviation(self, inpt: AverageInput) -> str:
+        print(inpt.file)
         image = await inpt.file.read()
         ds = pydicom.dcmread(io.BytesIO(image))
         image = ds.pixel_array

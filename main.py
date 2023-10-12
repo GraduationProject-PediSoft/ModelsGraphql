@@ -17,7 +17,6 @@ class Query:
     average_and_desviation: str = strawberry.field(resolver=Queries.average_and_deviation)
 
 
-
 schema = strawberry.Schema(query=Query)
 
 graphql_app = GraphQL(schema)
