@@ -6,14 +6,14 @@ import uvicorn
 from fastapi import FastAPI
 from strawberry.asgi import GraphQL
 
-from algorithms.models import Queries
+from algorithms.models import Queries, URL
 
 app_name = 'models-python'
 
 @strawberry.type
 class Query:
     marching_squares: str = strawberry.field(resolver=Queries.marching_squares, description="Algoritmo de marching squares")
-    binarization: str = strawberry.field(resolver=Queries.binarization, description="Algoritmo de binarization")
+    binarization: URL = strawberry.field(resolver=Queries.binarization, description="Algoritmo de binarization")
     average_and_desviation: str = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
 
 

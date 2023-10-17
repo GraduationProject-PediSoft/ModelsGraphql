@@ -26,10 +26,13 @@ class MarchingInput:
 class AverageInput:
     file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
+@strawberry.type
+class URL:
+    url: str = strawberry.field(description="Url: Enlace de la imagen procesada")
 
 class Queries:
 
-    async def binarization(self, inpt: BinarizationInput) -> str:
+    async def binarization(self, inpt: BinarizationInput) -> URL:
         image = await inpt.file.read()
         dicom_dataset = pydicom.dcmread(io.BytesIO(image))
 
@@ -55,7 +58,8 @@ class Queries:
         else:
             response_data = {"error": "Hubo un problema con la solicitud POST al manejador de archivos"}
 
-        return response_data
+        r = URL(url=response_data)
+        return r
 
     async def marching_squares(self, inpt: Annotated[MarchingInput, strawberry.argument(
         description="Input to xtract contours from a DICOM image using Marching Squares.")]) -> str:
