@@ -12,9 +12,9 @@ app_name = 'models-python'
 
 @strawberry.type
 class Query:
-    marching_squares: str = strawberry.field(resolver=Queries.marching_squares)
-    binarization: str = strawberry.field(resolver=Queries.binarization)
-    average_and_desviation: str = strawberry.field(resolver=Queries.average_and_deviation)
+    marching_squares: str = strawberry.field(resolver=Queries.marching_squares, description="Algoritmo de marching squares")
+    binarization: str = strawberry.field(resolver=Queries.binarization, description="Algoritmo de binarization")
+    average_and_desviation: str = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
 
 
 schema = strawberry.Schema(query=Query)

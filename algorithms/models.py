@@ -1,6 +1,7 @@
-import base64
 import io
 import json
+from typing import Annotated
+import httpx
 
 import numpy as np
 import pydicom
@@ -10,57 +11,58 @@ from skimage import measure
 from strawberry.file_uploads import Upload
 
 
-@strawberry.input
+@strawberry.input(description="Tipo para algoritmo de binarización")
 class BinarizationInput:
-    threshold: int
-    file: Upload
+    threshold: int = strawberry.field(description="Threshold: Umbral de binarización")
+    file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
 
-@strawberry.input
+@strawberry.input(description="Tipo para el algoritmo de Marching Squares")
 class MarchingInput:
-    file: Upload
+    file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
-@strawberry.input
+
+@strawberry.input(description="Tipo para el algoritmo de media y desviación estándar")
 class AverageInput:
-    file: Upload
-
+    file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
 
 class Queries:
 
     async def binarization(self, inpt: BinarizationInput) -> str:
-        print(inpt.file)
         image = await inpt.file.read()
         dicom_dataset = pydicom.dcmread(io.BytesIO(image))
 
-        # Convertir los píxeles DICOM a una matriz NumPy
         pixel_array = dicom_dataset.pixel_array
 
         binarized_array = pixel_array > inpt.threshold
 
         binarized_image = Image.fromarray((binarized_array * 255).astype(np.uint8))
 
-        # Convertir la imagen en bytes
         image_stream = io.BytesIO()
         binarized_image.save(image_stream, format="PNG")
         image_data = image_stream.getvalue()
-        image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-        result = {
-            "response": image_base64,
-            "type": "Image"
-        }
+        url = 'http://tesisbackend.10.43.101.226.nip.io/files/'
 
-        response = json.dumps(result)
+        async with httpx.AsyncClient() as client:
+            files = {'file': ('image.png', image_data, 'image/png')}
+            response = await client.post(url, files=files)
 
-        return response
+        if response.status_code == 200:
+            response_data = json.dumps(response.read().decode('utf-8'))
 
-    async def marching_squares(self, inpt: MarchingInput) -> str:
+        else:
+            response_data = {"error": "Hubo un problema con la solicitud POST al manejador de archivos"}
+
+        return response_data
+
+    async def marching_squares(self, inpt: Annotated[MarchingInput, strawberry.argument(
+        description="Input to xtract contours from a DICOM image using Marching Squares.")]) -> str:
         image = await inpt.file.read()
         ds = pydicom.dcmread(io.BytesIO(image))
         image = ds.pixel_array
 
-        # Encuentra los contornos utilizando Marching Squares
         contours = measure.find_contours(image, 0.1, 'high')
 
         contours_np = [cont.astype(int) for cont in contours]
@@ -75,7 +77,8 @@ class Queries:
 
         return response
 
-    async def average_and_deviation(self, inpt: AverageInput) -> str:
+    async def average_and_deviation(self, inpt: Annotated[AverageInput, strawberry.argument(
+        description="Input to calculate average and deviation of pixel values in a DICOM image.")]) -> str:
         print(inpt.file)
         image = await inpt.file.read()
         ds = pydicom.dcmread(io.BytesIO(image))
