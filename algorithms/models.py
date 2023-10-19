@@ -66,7 +66,7 @@ class Queries:
             response = await client.post(url, files=files)
 
         if response.status_code == 200:
-            response_data = json.dumps(response.read().decode('utf-8'))
+            response_data = response.read().decode('utf-8')
 
         else:
             response_data = {"error": "Hubo un problema con la solicitud POST al manejador de archivos"}
