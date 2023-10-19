@@ -5,16 +5,15 @@ import strawberry
 import uvicorn
 from fastapi import FastAPI
 from strawberry.asgi import GraphQL
-
-from algorithms.models import Queries, URL
+from algorithms.models import Queries, URL, PolyData, AverageOutput
 
 app_name = 'models-python'
 
 @strawberry.type
 class Query:
-    marching_squares: str = strawberry.field(resolver=Queries.marching_squares, description="Algoritmo de marching squares")
+    marching_squares: PolyData = strawberry.field(resolver=Queries.marching_squares, description="Algoritmo de marching squares")
     binarization: URL = strawberry.field(resolver=Queries.binarization, description="Algoritmo de binarization")
-    average_and_desviation: str = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
+    average_and_desviation: AverageOutput = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
 
 
 schema = strawberry.Schema(query=Query)
@@ -24,7 +23,6 @@ graphql_app = GraphQL(schema)
 app = FastAPI()
 app.add_route("/graphql", graphql_app)
 app.add_websocket_route("/graphql", graphql_app)
-
 
 def get_server_info():
     import socket

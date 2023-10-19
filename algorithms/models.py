@@ -26,9 +26,22 @@ class MarchingInput:
 class AverageInput:
     file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
+
 @strawberry.type
 class URL:
     url: str = strawberry.field(description="Url: Enlace de la imagen procesada")
+
+
+@strawberry.type
+class PolyData:
+    points: str = strawberry.field(description="Points: Puntos de los contornos de la imagen")
+
+
+@strawberry.type
+class AverageOutput:
+    media: str = strawberry.field(description="Media: Promedio de los pixeles de la imagen")
+    deviation: str = strawberry.field(description="Deviation: Desviación estándar de los pixeles de la imagen")
+
 
 class Queries:
 
@@ -62,7 +75,7 @@ class Queries:
         return r
 
     async def marching_squares(self, inpt: Annotated[MarchingInput, strawberry.argument(
-        description="Input to xtract contours from a DICOM image using Marching Squares.")]) -> str:
+        description="Input to xtract contours from a DICOM image using Marching Squares.")]) -> PolyData:
         image = await inpt.file.read()
         ds = pydicom.dcmread(io.BytesIO(image))
         image = ds.pixel_array
@@ -72,17 +85,12 @@ class Queries:
         contours_np = [cont.astype(int) for cont in contours]
         serialized_contours = json.dumps([cont.tolist() for cont in contours_np])
 
-        result = {
-            "response": serialized_contours,
-            "type": "Points"
-        }
-
-        response = json.dumps(result)
+        response = PolyData(points=json.dumps(serialized_contours))
 
         return response
 
     async def average_and_deviation(self, inpt: Annotated[AverageInput, strawberry.argument(
-        description="Input to calculate average and deviation of pixel values in a DICOM image.")]) -> str:
+        description="Input to calculate average and deviation of pixel values in a DICOM image.")]) -> AverageOutput:
         print(inpt.file)
         image = await inpt.file.read()
         ds = pydicom.dcmread(io.BytesIO(image))
@@ -91,16 +99,6 @@ class Queries:
         media = np.mean(image)
         deviation = np.std(image)
 
-        data = {
-            "media": media,
-            "desviacion_estandar": deviation
-        }
-
-        result = {
-            "response": json.dumps(data),
-            "type": "Data"
-        }
-
-        response = json.dumps(result)
+        response = AverageOutput(media=media, deviation=deviation)
 
         return response
