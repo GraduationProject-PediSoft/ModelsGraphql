@@ -85,7 +85,7 @@ class Queries:
         contours_np = [cont.astype(int) for cont in contours]
         serialized_contours = json.dumps([cont.tolist() for cont in contours_np])
 
-        response = PolyData(points=json.dumps(serialized_contours))
+        response = PolyData(points=serialized_contours)
 
         return response
 
