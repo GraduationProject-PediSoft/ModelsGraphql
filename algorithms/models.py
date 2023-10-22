@@ -2,6 +2,7 @@ import io
 import json
 from typing import Annotated
 import httpx
+import os
 
 import numpy as np
 import pydicom
@@ -59,7 +60,7 @@ class Queries:
         binarized_image.save(image_stream, format="PNG")
         image_data = image_stream.getvalue()
 
-        url = 'http://tesisbackend.10.43.101.226.nip.io/files/'
+        url = os.environ.get("FILES_URL")
 
         async with httpx.AsyncClient() as client:
             files = {'file': ('image.png', image_data, 'image/png')}

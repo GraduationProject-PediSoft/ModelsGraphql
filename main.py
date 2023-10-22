@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 from strawberry.asgi import GraphQL
 from algorithms.models import Queries, URL, PolyData, AverageOutput
+import os
 
 app_name = 'models-python'
 
@@ -33,7 +34,7 @@ def get_server_info():
 
 async def main():
     ip = get_server_info()
-    await eureka_client.init_async(eureka_server="http://eureka:8761",
+    await eureka_client.init_async(eureka_server=os.environ.get("EUREKA_URL"),
                                    app_name=app_name,
                                    instance_port=8000,
                                    metadata={"microservice-type": "IA-MODEL"},
