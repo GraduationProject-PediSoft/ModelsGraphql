@@ -20,6 +20,11 @@ class BinarizationInput:
 
 @strawberry.input(description="Tipo para el algoritmo de Marching Squares")
 class MarchingInput:
+    level: float = strawberry.field(description="Level: Nivel de umbral para identificar los contornos. Rango: [0,1]")
+    fully_connected: str = strawberry.field(
+        description="Fully_connected: Controla la conectividad de los píxeles en el contorno. Valores: [high,low]")
+    positive_orientation: str = strawberry.field(
+        description="Positive_orientation: Controla la orientación de los píxeles en el contorno. Valores: [high,low]")
     file: Upload = strawberry.field(description="File: Archivo de la imagen")
 
 
@@ -81,7 +86,7 @@ class Queries:
         ds = pydicom.dcmread(io.BytesIO(image))
         image = ds.pixel_array
 
-        contours = measure.find_contours(image, 0.1, 'high')
+        contours = measure.find_contours(image, inpt.level, inpt.fully_connected, inpt.positive_orientation)
 
         contours_np = [cont.astype(int) for cont in contours]
         serialized_contours = json.dumps([cont.tolist() for cont in contours_np])

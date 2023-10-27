@@ -14,7 +14,7 @@ app_name = 'models-python'
 class Query:
     marching_squares: PolyData = strawberry.field(resolver=Queries.marching_squares, description="Algoritmo de marching squares")
     binarization: URL = strawberry.field(resolver=Queries.binarization, description="Algoritmo de binarization")
-    average_and_desviation: AverageOutput = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
+    average_and_deviation: AverageOutput = strawberry.field(resolver=Queries.average_and_deviation, description="Algoritmo de media y desviación estándar")
 
 
 schema = strawberry.Schema(query=Query)
